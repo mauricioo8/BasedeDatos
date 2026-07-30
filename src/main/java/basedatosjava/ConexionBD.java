@@ -31,9 +31,20 @@ public class ConexionBD {
     }
 
     public static Connection obtenerConexion() throws SQLException {
-        String url = propiedades.getProperty("db.url");
-        String usuario = propiedades.getProperty("db.usuario");
-        String clave = propiedades.getProperty("db.clave");
-        return DriverManager.getConnection(url, usuario, clave);
+
+    String url = propiedades.getProperty("db.url");
+    String usuario = propiedades.getProperty("db.usuario");
+    String clave = propiedades.getProperty("db.clave");
+
+    System.out.println("Intentando conectar...");
+    System.out.println(url);
+    System.out.println(usuario);
+
+    Connection conexion = DriverManager.getConnection(url, usuario, clave);
+
+    System.out.println("Conexion exitosa");
+
+    return conexion;
+
     }
 }
