@@ -1,4 +1,3 @@
-
 package basedatosjava.vista;
 
 import basedatosjava.dao.CursoDAO;
@@ -14,8 +13,11 @@ public class VentanaCursos extends JFrame {
     private final CursoTableModel modeloTabla = new CursoTableModel();
 
     private final JTextField txtId = new JTextField(5);
+    private final JTextField txtCodigo = new JTextField(10);
     private final JTextField txtNombre = new JTextField(15);
     private final JTextField txtCreditos = new JTextField(5);
+    private final JTextField txtHorasSemanales = new JTextField(5);
+    private final JTextField txtDocente = new JTextField(15);
     private final JTextField txtBusqueda = new JTextField(15);
 
     private final JTable tabla = new JTable(modeloTabla);
@@ -26,10 +28,10 @@ public class VentanaCursos extends JFrame {
         super("Gestión de Cursos");
 
         construirInterfaz();
-        
+        cargarTodos();
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(700, 450);
+        setSize(750, 500);
         setLocationRelativeTo(null);
     }
 
@@ -78,8 +80,11 @@ public class VentanaCursos extends JFrame {
         agregarCampo(panel,c,fila++,"ID:",txtId);
         txtId.setEditable(false);
 
+        agregarCampo(panel,c,fila++,"Código:",txtCodigo);
         agregarCampo(panel,c,fila++,"Nombre:",txtNombre);
         agregarCampo(panel,c,fila++,"Créditos:",txtCreditos);
+        agregarCampo(panel,c,fila++,"Horas semanales:",txtHorasSemanales);
+        agregarCampo(panel,c,fila++,"Docente:",txtDocente);
 
 
 
@@ -149,7 +154,7 @@ public class VentanaCursos extends JFrame {
         btnListar.addActionListener(e -> cargarTodos());
 
 
-        panel.add(new JLabel("Nombre:"));
+        panel.add(new JLabel("Nombre, código o docente:"));
         panel.add(txtBusqueda);
         panel.add(btnBuscar);
         panel.add(btnListar);
@@ -177,7 +182,7 @@ public class VentanaCursos extends JFrame {
         }else{
 
             JOptionPane.showMessageDialog(this,
-                    "No se pudo registrar el curso.");
+                    "No se pudo registrar el curso. Revisa que el código no esté repetido.");
         }
 
     }catch(Exception e){
@@ -202,6 +207,12 @@ public class VentanaCursos extends JFrame {
 
     private Curso leerFormulario(){
 
+        if(txtCodigo.getText().isBlank()){
+            throw new IllegalArgumentException(
+                    "El código es obligatorio."
+            );
+        }
+
         if(txtNombre.getText().isBlank()){
 
             throw new IllegalArgumentException(
@@ -209,16 +220,24 @@ public class VentanaCursos extends JFrame {
             );
         }
 
+        int creditos;
+        int horasSemanales;
 
-        int creditos = Integer.parseInt(
-                txtCreditos.getText()
-        );
-
+        try {
+            creditos = Integer.parseInt(txtCreditos.getText().trim());
+            horasSemanales = Integer.parseInt(txtHorasSemanales.getText().trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                    "Créditos y horas semanales deben ser números enteros."
+            );
+        }
 
         return new Curso(
-                0,
-                txtNombre.getText(),
-                creditos
+                txtCodigo.getText().trim(),
+                txtNombre.getText().trim(),
+                creditos,
+                horasSemanales,
+                txtDocente.getText().trim()
         );
 
     }
@@ -228,8 +247,11 @@ public class VentanaCursos extends JFrame {
     private void limpiarFormulario(){
 
         txtId.setText("");
+        txtCodigo.setText("");
         txtNombre.setText("");
         txtCreditos.setText("");
+        txtHorasSemanales.setText("");
+        txtDocente.setText("");
 
         tabla.clearSelection();
 
@@ -250,12 +272,17 @@ public class VentanaCursos extends JFrame {
 
     private void cargarFormularioDesdeFila(int fila){
 
+        int filaModelo = tabla.convertRowIndexToModel(fila);
         Curso curso =
-                modeloTabla.getCursoEn(fila);
+                modeloTabla.getCursoEn(filaModelo);
 
 
         txtId.setText(
-                String.valueOf(curso.getIdCurso())
+                String.valueOf(curso.getId())
+        );
+
+        txtCodigo.setText(
+                curso.getCodigo()
         );
 
         txtNombre.setText(
@@ -264,6 +291,14 @@ public class VentanaCursos extends JFrame {
 
         txtCreditos.setText(
                 String.valueOf(curso.getCreditos())
+        );
+
+        txtHorasSemanales.setText(
+                String.valueOf(curso.getHorasSemanales())
+        );
+
+        txtDocente.setText(
+                curso.getDocente()
         );
 
     }
@@ -283,7 +318,7 @@ public class VentanaCursos extends JFrame {
 
         Curso curso = leerFormulario();
 
-        curso.setIdCurso(
+        curso.setId(
                 Integer.parseInt(txtId.getText())
         );
 
@@ -296,6 +331,10 @@ public class VentanaCursos extends JFrame {
             cargarTodos();
             limpiarFormulario();
 
+        } else {
+
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo actualizar el curso.");
         }
 
 
@@ -319,6 +358,13 @@ private void eliminar(){
         return;
     }
 
+    int confirmacion = JOptionPane.showConfirmDialog(this,
+            "¿Seguro que deseas eliminar este curso?", "Confirmar",
+            JOptionPane.YES_NO_OPTION);
+
+    if (confirmacion != JOptionPane.YES_OPTION) {
+        return;
+    }
 
     int id = Integer.parseInt(
             txtId.getText()
@@ -333,8 +379,12 @@ private void eliminar(){
         cargarTodos();
         limpiarFormulario();
 
+    } else {
+
+        JOptionPane.showMessageDialog(this,
+                "No se pudo eliminar. Puede que tenga matrículas asociadas.");
     }
 
-}  
-    
+}
+
 }

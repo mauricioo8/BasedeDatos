@@ -1,4 +1,3 @@
-
 package basedatosjava.vista;
 
 import basedatosjava.modelo.Curso;
@@ -13,7 +12,7 @@ import java.util.List;
 public class CursoTableModel extends AbstractTableModel {
 
     private final String[] columnas = {
-            "ID", "Nombre", "Créditos"
+            "ID", "Código", "Nombre", "Créditos", "Horas Sem.", "Docente"
     };
 
     private List<Curso> cursos = new ArrayList<>();
@@ -48,9 +47,12 @@ public class CursoTableModel extends AbstractTableModel {
         Curso c = cursos.get(fila);
 
         return switch (columna) {
-            case 0 -> c.getIdCurso();
-            case 1 -> c.getNombre();
-            case 2 -> c.getCreditos();
+            case 0 -> c.getId();
+            case 1 -> c.getCodigo();
+            case 2 -> c.getNombre();
+            case 3 -> c.getCreditos();
+            case 4 -> c.getHorasSemanales();
+            case 5 -> c.getDocente();
             default -> "";
         };
     }
