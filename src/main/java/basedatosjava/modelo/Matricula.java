@@ -84,15 +84,27 @@ public class Matricula {
     }
  
     @Override
-    public String toString() {
-        String infoCurso = curso != null
-                ? String.format("%s - %s", curso.getCodigo(), curso.getNombre())
-                : "Curso ID: " + cursoId;
-        String infoAlumno = alumno != null
-                ? String.format("%s %s", alumno.getNombre(), alumno.getApellido())
-                : "Alumno ID: " + alumnoId;
-        return String.format(
-                "Matrícula ID: %-4d %-30s %-30s Fecha: %-12s Estado: %s",
-                id, infoAlumno, infoCurso, fechaMatricula, estado);
-    }
+public String toString() {
+
+    String infoCurso = curso != null
+            ? curso.getNombre()
+            : "Curso ID: " + cursoId;
+
+
+    String infoAlumno = alumno != null
+            ? String.format("%s %s",
+                    alumno.getNombre(),
+                    alumno.getApellido())
+            : "Alumno ID: " + alumnoId;
+
+
+    return String.format(
+            "Matrícula ID: %-4d %-30s %-30s Fecha: %-12s Estado: %s",
+            id,
+            infoAlumno,
+            infoCurso,
+            fechaMatricula,
+            estado
+    );
+}
 }
