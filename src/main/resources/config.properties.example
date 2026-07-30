@@ -1,0 +1,3 @@
+db.url=jdbc:mysql://localhost:3306/sistema_academico
+db.usuario=root
+db.clave=TU_CONTRASENA_AQUI
